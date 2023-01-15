@@ -1,0 +1,11 @@
+{
+	"name": "Existing Dockerfile",
+	"build": {
+		"context": "..",
+		"dockerfile": "../Dockerfile"
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {},
+		"ghcr.io/shyim/devcontainers-features/symfony-cli:0": {}
+	}
+}
