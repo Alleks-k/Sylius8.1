@@ -1,0 +1,73 @@
+services:
+
+  migrations:
+    container_name: migrations
+    build:
+      context: .
+      target: sylius_migrations_dev
+    depends_on:
+      - mysql
+    environment:
+      APP_ENV: dev
+      APP_DEBUG: 1
+      APP_SECRET: EDITME
+      DATABASE_URL: mysql://sylius:${MYSQL_PASSWORD}@mysql/sylius_dev
+      LOAD_FIXTURES: ${LOAD_FIXTURES:-1}
+      PHP_DATE_TIMEZONE: ${PHP_DATE_TIMEZONE:-UTC}
+    networks:
+      - dev
+
+  mysql:
+    container_name: mysql
+    # in production, we may want to use a managed database service
+    image: mysql:5.7 # Sylius is fully working on mysql 8.0 version
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: true
+      MYSQL_DATABASE: sylius_dev
+      MYSQL_USER: sylius
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD is not set or empty}
+    volumes:
+      # use a bind-mounted host directory, because we never want to lose our data!
+      - ./docker/mysql/data:/var/lib/mysql:rw,delegated
+    networks:
+      - dev
+
+
+### Portainer ###########################################
+  portainer:
+    image: portainer/portainer-ce:latest
+    command: -H unix:///var/run/docker.sock
+    restart: always
+    ports:
+      - 9005:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - dev
+
+### phpMyAdmin ###########################################
+  phpmyadmin:
+    build: ./docker/phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
+      - MYSQL_USER=default
+      - MYSQL_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=secret
+      - MAX_EXECUTION_TIME=600
+      - MEMORY_LIMIT=256M
+      - UPLOAD_LIMIT=2G
+    ports:
+      - "8004:80"
+    depends_on:
+      - "mysql"
+    networks:
+      - dev
+
+
+networks:
+  dev:
+    driver: bridge
+    
+volumes:
+  portainer_data: 
