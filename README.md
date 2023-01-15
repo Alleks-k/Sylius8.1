@@ -46,6 +46,18 @@ Make sure you have installed [Docker](https://docs.docker.com/get-docker/) on yo
 Execute `docker compose up -d` in your favorite terminal and wait some time until the services will be ready. You might want to see docker logs.
 Then enter `localhost` in your browser or execute `open localhost` in your terminal.
 
+```bash
+composer install
+yarn install
+yarn build
+export MYSQL_PASSWORD=SLyPJLaye7
+nano /etc/php/8.0/cli/php.ini
+date.timezone = Europe/Kiev
+docker compose -f docker-compose.dev.yml up -d
+symfony serve
+```
+
+
 #### Production
 
 The simplest way to deploy your Sylius store via Docker is via `docker-compose.prod.yml` configuration file.
